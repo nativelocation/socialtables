@@ -4,22 +4,162 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.css">
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 		<link rel="stylesheet" href="assets/css/main.css">
 		<title>Social Table</title>
 		<script>
-			window.onload = () => {
+			var searchResult = [];
+			var table;
+
+			function numberWithCommas(x) {
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 			}
+
+			function exportText(event) {
+			}
+
+			function exportCV() {
+			}
+
+			function copyText() {
+				$('#search-content').select(); 
+				document.execCommand("copy")
+			}
+
+			function deleteText() {
+				$('#search-content').val(''); 
+			}
+
+			function tableRowClick() {
+				let audienceSize = parseInt($(this).find('td')[1].innerText.replace(',', '').replace(',', '').replace(',', ''));
+				if (audienceSize > 500000) {
+					$('#searchKey').val($(this).find('td')[0].innerText);
+					onSearch($(this).find('td')[0].innerText);
+				}
+				if ($('#search-content').val() === '') {
+					$('#search-content').val($(this).find('td')[0].innerText);
+				} else {
+					$('#search-content').val($('#search-content').val() + '\n' + $(this).find('td')[0].innerText);
+				}
+				// $('#search-content').val($('#search-content').val() + '\n' + $(this).find('td')[0].innerText);
+				// console.log($(this).find('td')[0].innerText);
+				// $(this).toggleClass('selected');
+				// console.log(this, table.rows('.selected').data());
+			}
+
+			function onSearch(searchKey) {
+				var value = searchKey ? searchKey : $('#searchKey').val();
+				searchResult = [];
+				if (table) {
+					$('#search-table tbody tr').unbind('click');
+					table.destroy();
+				}
+				if (value) {
+					fetch('https://graph.facebook.com/search?type=adinterest&q=[%22' + value + '%22]&limit=10000&locale=en_US&access_token=280373589551638|RL_-SHFm9Vh7G-fdpuVldtXfcZU')
+					.then(
+						function(response) {
+							return response.json();
+						}
+					)
+					.then(
+						function(response) {
+							response.data.map(function(item, index) {
+								var nItem = [];
+								nItem.push(item.name);
+								nItem.push(numberWithCommas(item.audience_size));
+								nItem.push('<div><i class="fas fa-search"></i></div>');
+								nItem.push('<div><i class="fas fa-search"></i></div>');
+								nItem.push('<div id="search-plus"><i class="fas fa-plus"></i></div>');
+								searchResult.push(nItem);
+							});
+							table = $('#search-table').DataTable({
+								data: searchResult,
+								columns: [
+									{ title: "Keyword" },
+									{ title: "Audience Size" },
+									{ title: "Google Search" },
+									{ title: "Facebook Search" },
+									{ title: "Add Keyword" }
+								],
+								columnDefs: [
+									{ width: '35%', targets: 0 },
+									{ className: 'text-center', targets: 1 },
+									{ className: 'text-center', targets: 2 },
+									{ className: 'text-center', targets: 3 },
+									{ className: 'text-center', targets: 4 },
+								],
+								order: [[ 1, "desc" ]]
+							});
+							$('#search-table tbody tr').bind( 'click', tableRowClick);
+						}
+					)
+					.catch(function(err) {});
+				}
+			}
+			window.onload = () => {}
 		</script>
   	</head>
 	<body>
-
+		<div class="main-container">
+			<header class="header d-flex justify-content-end align-items-center px-2">
+				<div class="btn btn-primary btn-signin">Sign In</div>
+			</header>
+			<div class="banner">
+				<img src="assets/img/calm-ocean.jpg" />
+				<div class="banner-features">
+					<div class="site_title">
+						Find more Facebook Audiences
+					</div>
+					<div class="search d-flex justify-content-center align-items-center">
+						<input id="searchKey" class="search-key mr-2" />
+						<div class="btn btn-primary btn-search px-4" onclick="onSearch()">Search</div>
+					</div>
+					<div class="description d-flex justify-content-center">
+						<div class="d-flex flex-column">
+							<div class="tool p-1">
+								<label for="expert-text" class="m-0"><img class="grid-icon px-1" src="assets/img/grid-45.svg" /></label>
+								<input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/>
+								<label for="expert-cv" class="m-0"><i class="fa fa-arrow-up px-1" style="color: white;"></i></label>
+								<input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/>
+								<i class="fa fa-copy px-1" style="color: white;" onclick="copyText()"></i>
+								<i class="fa fa-trash px-1" style="color: white;" onclick="deleteText()"></i>
+							</div>
+							<textarea id="search-content" class="desc-area"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="main-content">
+				<table id="search-table" class="display compact"></table>
+			</div>
+			<footer class="d-flex justify-content-between align-items-center p-3">
+				<div>
+					<ul class="d-flex align-items-center m-0 p-0" style="font-size: 12px">
+						<li class="mx-3" style="color: rgb(36, 123, 238)">About</li>
+						<li class="mx-3" style="color: rgb(36, 123, 238)">Contact</li>
+						<li class="mx-3" style="color: rgb(36, 123, 238)">Team of Use</li>
+						<li class="mx-3" style="color: rgb(36, 123, 238)">Privacy Policy</li>
+					</ul>
+					<div style="font-size: 12px; opacity: 0.4">
+						<i class="far fa-copyright"></i>Test 2018 All Rights Reserved.
+					</div>
+				</div>
+				<div>
+					<a href="https://www.facebook.com"><i class="fab fa-facebook-f p-2" style="color: rgb(36, 123, 238)"></i></a>
+					<a href="https://www.twitter.com"><i class="fab fa-twitter p-2" style="color: rgb(36, 123, 238)"></i></a>
+					<a href="https://www.instagram.com"><i class="fab fa-instagram p-2" style="color: rgb(36, 123, 238)"></i></a>
+				</div>
+			</footer>
+		</div>
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.js"></script>
+		<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 	</body>
 </html>

@@ -1,0 +1,135 @@
+body {
+	background: #364152;
+}
+
+.main-container {
+	max-width: 850px;
+	background: white;
+	margin: auto;
+}
+
+.main-container .header {
+	height: 45px;
+}
+
+.main-container .header .btn-signin {
+	padding: 4px 8px;
+	font-size: 14px;
+}
+
+.main-container .banner {
+	position: relative;
+}
+
+.main-container .banner img {
+	width: 850px;
+}
+
+.main-container .banner .banner-features {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	border: 0;
+	text-align: center;
+}
+
+.main-container .banner .banner-features .site_title {
+	margin-top: 72px;
+	margin-bottom: 35px;
+	font-size: 36px;
+	font-weight: 600;
+	color: white;
+}
+
+.main-container .banner .banner-features .search {
+	margin-bottom: 80px;
+}
+
+.main-container .banner .banner-features .search .search-key {
+	width: 300px;
+	height: 38px;
+	border-radius: 6px;
+	border: none;
+	color: #3f3f3f;
+	font-size: 16px;
+	padding: auto;
+	padding-right: 8px;
+	padding-left: 8px;
+}
+
+.main-container .banner .banner-features .description textarea {
+	width: 360px;
+	height: 120px;
+	font-size: 14px;
+	color: #3e3e3e;
+	background: #b5b5b5;
+	padding: 4px 8px;
+}
+
+.main-container .banner .banner-features .description .tool {
+	width: 95px;
+	background: #238bec;
+	font-size: 12px;
+}
+
+.main-container .banner .banner-features .description .tool .grid-icon {
+	width: 17px;
+  transform: rotate(45deg);
+}
+
+.main-container .main-content {
+	padding: 60px 20px;
+}
+
+.main-container .main-content #search-table_wrapper {
+	font-size: 12px;
+}
+
+#expert-cv,
+#expert-text {
+	opacity: 0;
+	position: absolute;
+	z-index: -1;
+}
+
+/* 280373589551638|RL_-SHFm9Vh7G-fdpuVldtXfcZU */
+/* Simple project for the right person.
+
+I'll have a simple form that will collect a keyword (eg 'fitness'), and will then pass that keyword to the Facebook Graph API
+
+The API will then respond with a json output, where I'll need all results displayed as a table (possibly limited to 20/50/100 results per page, with option to view next/previous)
+
+On the results page, there will also be a text box that starts out empty, but will be populated with selected keywords from Column 5 as you'll see below. Then there will be the option to 'Copy All To Clipboard', 'Export as TXT', and 'Export as CSV'
+
+There will be 5 columns in this table:
+C1: Result (new keyword)
+C2: Population (this will come from the json result, don't worry)
+C3: Search icon (to search Google for keyword in C1)
+C4: Facebook icon (to search Facebook for keyword in C1)
+C5: 'PLUS' icon (to add keyword to a text box at top of the page)
+
+Bonus for anyone who can create this to work on a Wordpress site :)
+
+ALSO - when Column 2 has a result of say >500,000 it would be great if Column 1 because clickable. By clicking the keyword in Column 1, it would trigger a new search based on that keyword. Though this can be added in later
+
+I've attached a very rough mockup screenshot of what I'm after
+
+Please give an accurate ETA and cost.
+
+Also note that you do not need to make this look "pretty" - I'm after functionality first and foremost. If you happen to be good at designing on the fly, that's great, and I'll happily accept that. But it's not a prerequisite */
+
+
+/* For this particular project, the API side is very easy, as it's just a single URL, which hopefully will make it even easier:
+
+https://graph.facebook.com/search?type=adinterest&q=[%22{KEYWORD}%22]&limit=10000&locale=en_US&access_token={API_ACCESS_TOKEN}
+
+So {KEYWORD} would be the keyword of course, and {API_ACCESS_TOKEN} would be my FB API key, which I've removed from the message due to an Upwork warning
+
+If i was searching for the word Fitness, it would look like:
+
+https://graph.facebook.com/search?type=adinterest&q=[%22Fitness%22]&limit=10000&locale=en_US&access_token={API_ACCESS_TOKEN}
+
+Given this, do you have an ETA on delivery for this project if you were selected? Is this a few hours... 1 day... 2 days? Just to give me an idea :)
+
+Thanks! */
