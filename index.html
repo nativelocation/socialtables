@@ -44,10 +44,19 @@
 				} else {
 					$('#search-content').val($('#search-content').val() + '\n' + $(this).find('td')[0].innerText);
 				}
-				// $('#search-content').val($('#search-content').val() + '\n' + $(this).find('td')[0].innerText);
-				// console.log($(this).find('td')[0].innerText);
-				// $(this).toggleClass('selected');
-				// console.log(this, table.rows('.selected').data());
+			}
+
+			function searchIconClick(name, size) {
+				let audienceSize = parseInt(size.replace(',', '').replace(',', '').replace(',', ''));
+				if (audienceSize > 500000) {
+					$('#searchKey').val(name);
+					onSearch(name);
+				}
+				if ($('#search-content').val() === '') {
+					$('#search-content').val(name);
+				} else {
+					$('#search-content').val($('#search-content').val() + '\n' + name);
+				}
 			}
 
 			function onSearch(searchKey) {
@@ -70,9 +79,9 @@
 								var nItem = [];
 								nItem.push(item.name);
 								nItem.push(numberWithCommas(item.audience_size));
-								nItem.push('<div><i class="fas fa-search"></i></div>');
-								nItem.push('<div><i class="fas fa-search"></i></div>');
-								nItem.push('<div id="search-plus"><i class="fas fa-plus"></i></div>');
+								nItem.push("<a target='_blank' href='http://www.google.com/search?q=" + item.name + "'><i class='fas fa-search'></i></a>");
+								nItem.push("<a target='_blank' href='https://www.facebook.com/search/top/?q=" + item.name + "'><i class='fas fa-search'></i></a>");
+								nItem.push("<div id='search-plus' onclick='searchIconClick(" + "'" + item.name + "'" + "," + "'" + numberWithCommas(item.audience_size) + "'" + ")'><i class='fas fa-plus'></i></div>");
 								searchResult.push(nItem);
 							});
 							table = $('#search-table').DataTable({
@@ -123,9 +132,9 @@
 						<div class="d-flex flex-column">
 							<div class="tool p-1">
 								<label for="expert-text" class="m-0"><img class="grid-icon px-1" src="assets/img/grid-45.svg" /></label>
-								<input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/>
+								<!--input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/-->
 								<label for="expert-cv" class="m-0"><i class="fa fa-arrow-up px-1" style="color: white;"></i></label>
-								<input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/>
+								<!--input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/ -->
 								<i class="fa fa-copy px-1" style="color: white;" onclick="copyText()"></i>
 								<i class="fa fa-trash px-1" style="color: white;" onclick="deleteText()"></i>
 							</div>
