@@ -13,6 +13,7 @@
 		<script>
 			var searchResult = [];
 			var data = [];
+			var exportSearchData = [], exportAddedData = [];
 			var table;
 
 			function convertArrayOfObjectsToCSV(args) {
@@ -48,9 +49,8 @@
 
 			function downloadCSV(filename) {
 				var dataCV, filename, link;
-
 				var csv = convertArrayOfObjectsToCSV({
-						dataCV: data
+						dataCV: exportSearchData.length === 0 ? exportAddedData : exportSearchData
 				});
 				if (csv == null) return;
 
@@ -72,7 +72,9 @@
 			}
 
 			function exportCV(event) {
-				downloadCSV('fbSearch');
+				// if (data.length > 0) {
+					downloadCSV('fbSearch');
+				// }
 			}
 
 			function exportText() {
@@ -90,20 +92,17 @@
 			}
 
 			function deleteText() {
-				$('#search-content').val(''); 
+				exportAddedData = [];
+				$('#search-content').val('');
 			}
 
 			function tableRowClick(index) {
-				/* let audienceSize = parseInt(data[index].audience_size.replace(',', '').replace(',', '').replace(',', ''));
-				if (audienceSize > 500000) {
-					$('#searchKey').val(data[index].name);
-					onSearch(data[index].name);
-				} */
 				$('#searchKey').val(data[index].name);
 				onSearch(data[index].name);
 			}
 
 			function searchIconClick(index) {
+				exportAddedData.push({ Keyword: data[index].name });
 				if ($('#search-content').val() === '') {
 					$('#search-content').val(data[index].name);
 				} else {
@@ -115,6 +114,7 @@
 				var value = searchKey ? searchKey : $('#searchKey').val();
 				searchResult = [];
 				data = [];
+				exportSearchData = [];
 				if (table) {
 					// $('#search-table tbody tr').unbind('click');
 					table.destroy();
@@ -131,6 +131,7 @@
 							data = response.data;
 							response.data.map(function(item, index) {
 								var nItem = [];
+								exportSearchData.push({ Keyword: item.name });
 								nItem.push("<div onclick='tableRowClick(" + index + ")'>" + item.name + "</div>");
 								nItem.push(numberWithCommas(item.audience_size));
 								nItem.push("<a target='_blank' href='http://www.google.com/search?q=" + item.name + "'><i class='fas fa-search'></i></a>");
@@ -158,7 +159,6 @@
 								lengthMenu: [ 20, 50, 100 ],
 								order: [[ 1, "desc" ]]
 							});
-							// $('#search-table tbody tr').bind( 'click', tableRowClick);
 						}
 					)
 					.catch(function(err) {});
@@ -185,12 +185,8 @@
 					<div class="description d-flex justify-content-center">
 						<div class="d-flex flex-column">
 							<div class="tool p-1">
-								<img class="grid-icon px-1" onclick="exportText(event)" src="assets/img/grid-45.svg" />
-								<!--label for="expert-text" class="m-0" onclick="exportText(event)"><img class="grid-icon px-1" src="assets/img/grid-45.svg" /></label>
-								<input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/-->
+								<!--img class="grid-icon px-1" onclick="exportText(event)" src="assets/img/grid-45.svg" /-->
 								<i class="fa fa-arrow-up px-1" onclick="exportCV(event)" style="color: white;"></i>
-								<!--label for="expert-cv" class="m-0" onclick="exportCV(event)"><i class="fa fa-arrow-up px-1" style="color: white;"></i></label>
-								<input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/ -->
 								<i class="fa fa-copy px-1" style="color: white;" onclick="copyText()"></i>
 								<i class="fa fa-trash px-1" style="color: white;" onclick="deleteText()"></i>
 							</div>
