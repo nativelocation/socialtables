@@ -50,7 +50,7 @@
 			function downloadCSV(filename) {
 				var dataCV, filename, link;
 				var csv = convertArrayOfObjectsToCSV({
-						dataCV: exportSearchData.length === 0 ? exportAddedData : exportSearchData
+						dataCV: exportAddedData //.length === 0 ? exportAddedData : exportSearchData
 				});
 				if (csv == null) return;
 
