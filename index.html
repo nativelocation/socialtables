@@ -15,18 +15,70 @@
 			var data = [];
 			var table;
 
+			function convertArrayOfObjectsToCSV(args) {
+				var result, ctr, keys, columnDelimiter, lineDelimiter, dataCV;
+
+				dataCV = args.dataCV || null;
+				if (dataCV == null || !dataCV.length) {
+						return null;
+				}
+
+				columnDelimiter = args.columnDelimiter || ',';
+				lineDelimiter = args.lineDelimiter || '\n';
+
+				keys = Object.keys(dataCV[0]);
+
+				result = '';
+				result += keys.join(columnDelimiter);
+				result += lineDelimiter;
+
+				dataCV.forEach(function(item) {
+						ctr = 0;
+						keys.forEach(function(key) {
+								if (ctr > 0) result += columnDelimiter;
+
+								result += item[key];
+								ctr++;
+						});
+						result += lineDelimiter;
+				});
+
+				return result;
+			}
+
+			function downloadCSV(filename) {
+				var dataCV, filename, link;
+
+				var csv = convertArrayOfObjectsToCSV({
+						dataCV: data
+				});
+				if (csv == null) return;
+
+				filename = filename || 'export.csv';
+
+				if (!csv.match(/^data:text\/csv/i)) {
+						csv = 'data:text/csv;charset=utf-8,' + csv;
+				}
+				dataCV = encodeURI(csv);
+
+				link = document.createElement('a');
+				link.setAttribute('href', dataCV);
+				link.setAttribute('download', filename);
+				link.click();
+			}
+
 			function numberWithCommas(x) {
 				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 			}
 
-			function exportText(event) {
+			function exportCV(event) {
+				downloadCSV('fbSearch');
 			}
 
-			function exportCV() {
+			function exportText() {
 			}
 
 			function handleChange(event) {
-				console.log('ere', event.target.value);
 				if (event.keyCode === 13) {
 					onSearch($('#searchKey').val());
 				}
@@ -133,10 +185,12 @@
 					<div class="description d-flex justify-content-center">
 						<div class="d-flex flex-column">
 							<div class="tool p-1">
-								<label for="expert-text" class="m-0"><img class="grid-icon px-1" src="assets/img/grid-45.svg" /></label>
-								<!--input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/-->
-								<label for="expert-cv" class="m-0"><i class="fa fa-arrow-up px-1" style="color: white;"></i></label>
-								<!--input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/ -->
+								<img class="grid-icon px-1" onclick="exportText(event)" src="assets/img/grid-45.svg" />
+								<!--label for="expert-text" class="m-0" onclick="exportText(event)"><img class="grid-icon px-1" src="assets/img/grid-45.svg" /></label>
+								<input type="file" name="expertText" id="expert-text" onchange="exportText(event)"/-->
+								<i class="fa fa-arrow-up px-1" onclick="exportCV(event)" style="color: white;"></i>
+								<!--label for="expert-cv" class="m-0" onclick="exportCV(event)"><i class="fa fa-arrow-up px-1" style="color: white;"></i></label>
+								<input type="file" name="expertCV" id="expert-cv" onchange="exportCV(event)"/ -->
 								<i class="fa fa-copy px-1" style="color: white;" onclick="copyText()"></i>
 								<i class="fa fa-trash px-1" style="color: white;" onclick="deleteText()"></i>
 							</div>
