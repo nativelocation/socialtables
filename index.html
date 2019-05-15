@@ -12,6 +12,7 @@
 		<title>Social Table</title>
 		<script>
 			var searchResult = [];
+			var data = [];
 			var table;
 
 			function numberWithCommas(x) {
@@ -24,6 +25,13 @@
 			function exportCV() {
 			}
 
+			function handleChange(event) {
+				console.log('ere', event.target.value);
+				if (event.keyCode === 13) {
+					onSearch($('#searchKey').val());
+				}
+			}
+
 			function copyText() {
 				$('#search-content').select(); 
 				document.execCommand("copy")
@@ -33,37 +41,30 @@
 				$('#search-content').val(''); 
 			}
 
-			function tableRowClick() {
-				let audienceSize = parseInt($(this).find('td')[1].innerText.replace(',', '').replace(',', '').replace(',', ''));
+			function tableRowClick(index) {
+				/* let audienceSize = parseInt(data[index].audience_size.replace(',', '').replace(',', '').replace(',', ''));
 				if (audienceSize > 500000) {
-					$('#searchKey').val($(this).find('td')[0].innerText);
-					onSearch($(this).find('td')[0].innerText);
-				}
-				if ($('#search-content').val() === '') {
-					$('#search-content').val($(this).find('td')[0].innerText);
-				} else {
-					$('#search-content').val($('#search-content').val() + '\n' + $(this).find('td')[0].innerText);
-				}
+					$('#searchKey').val(data[index].name);
+					onSearch(data[index].name);
+				} */
+				$('#searchKey').val(data[index].name);
+				onSearch(data[index].name);
 			}
 
-			function searchIconClick(name, size) {
-				let audienceSize = parseInt(size.replace(',', '').replace(',', '').replace(',', ''));
-				if (audienceSize > 500000) {
-					$('#searchKey').val(name);
-					onSearch(name);
-				}
+			function searchIconClick(index) {
 				if ($('#search-content').val() === '') {
-					$('#search-content').val(name);
+					$('#search-content').val(data[index].name);
 				} else {
-					$('#search-content').val($('#search-content').val() + '\n' + name);
+					$('#search-content').val($('#search-content').val() + '\n' + data[index].name);
 				}
 			}
 
 			function onSearch(searchKey) {
 				var value = searchKey ? searchKey : $('#searchKey').val();
 				searchResult = [];
+				data = [];
 				if (table) {
-					$('#search-table tbody tr').unbind('click');
+					// $('#search-table tbody tr').unbind('click');
 					table.destroy();
 				}
 				if (value) {
@@ -75,13 +76,14 @@
 					)
 					.then(
 						function(response) {
+							data = response.data;
 							response.data.map(function(item, index) {
 								var nItem = [];
-								nItem.push(item.name);
+								nItem.push("<div onclick='tableRowClick(" + index + ")'>" + item.name + "</div>");
 								nItem.push(numberWithCommas(item.audience_size));
 								nItem.push("<a target='_blank' href='http://www.google.com/search?q=" + item.name + "'><i class='fas fa-search'></i></a>");
 								nItem.push("<a target='_blank' href='https://www.facebook.com/search/top/?q=" + item.name + "'><i class='fas fa-search'></i></a>");
-								nItem.push("<div id='search-plus' onclick='searchIconClick(" + "'" + item.name + "'" + "," + "'" + numberWithCommas(item.audience_size) + "'" + ")'><i class='fas fa-plus'></i></div>");
+								nItem.push("<div id='search-plus' onclick='searchIconClick(" + index + ")'><i class='fas fa-plus'></i></div>");
 								searchResult.push(nItem);
 							});
 							table = $('#search-table').DataTable({
@@ -96,15 +98,15 @@
 								columnDefs: [
 									{ width: '35%', targets: 0 },
 									{ className: 'text-center', targets: 1 },
-									{ className: 'text-center', targets: 2 },
-									{ className: 'text-center', targets: 3 },
+									{ className: 'text-center', sortable: false, targets: 2 },
+									{ className: 'text-center', sortable: false, targets: 3 },
 									{ className: 'text-center', targets: 4 },
 								],
 								pageLength: 20,
 								lengthMenu: [ 20, 50, 100 ],
 								order: [[ 1, "desc" ]]
 							});
-							$('#search-table tbody tr').bind( 'click', tableRowClick);
+							// $('#search-table tbody tr').bind( 'click', tableRowClick);
 						}
 					)
 					.catch(function(err) {});
@@ -125,7 +127,7 @@
 						Find more Facebook Audiences
 					</div>
 					<div class="search d-flex justify-content-center align-items-center">
-						<input id="searchKey" class="search-key mr-2" />
+						<input id="searchKey" class="search-key mr-2" onkeypress="handleChange(event)" autofocus />
 						<div class="btn btn-primary btn-search px-4" onclick="onSearch()">Search</div>
 					</div>
 					<div class="description d-flex justify-content-center">
